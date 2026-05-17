@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inventario | Dashboard</title>
+    <script>
+      window.tailwind = window.tailwind || {};
+      window.tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              fontFamily: {
+                sans: ["Inter", "ui-sans-serif", "system-ui", "Segoe UI", "sans-serif"],
+              },
+              colors: {
+                ink: "#111827",
+                cloud: "#f6f8fb",
+                mint: "#16a34a",
+                coral: "#f97316",
+                steel: "#2563eb",
+              },
+              boxShadow: {
+                soft: "0 20px 60px rgba(15, 23, 42, 0.10)",
+                panel: "0 1px 0 rgba(148, 163, 184, 0.18), 0 18px 48px rgba(15, 23, 42, 0.08)",
+              },
+            },
+          },
+      };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      :root { color-scheme: light; }
+      .dark { color-scheme: dark; }
+      body {
+        background:
+          linear-gradient(180deg, rgba(246, 248, 251, 0.98) 0%, rgba(238, 242, 247, 1) 100%);
+      }
+      .dark body {
+        background:
+          linear-gradient(180deg, rgba(9, 14, 24, 1) 0%, rgba(15, 23, 42, 1) 100%);
+      }
+      .app-shell {
+        min-height: 100vh;
+      }
+      .glass {
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+      }
+      .product-row {
+        grid-template-columns: minmax(240px, 2.2fr) 0.85fr 0.9fr 0.9fr 0.8fr 120px;
+      }
+      .stock-bar span {
+        width: var(--level);
+      }
+      .hide-scrollbar::-webkit-scrollbar { display: none; }
+      .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+  </head>
+  <body class="font-sans text-slate-950 antialiased dark:text-slate-100">
+    <div class="app-shell mx-auto flex w-full max-w-[1600px]">
+      <aside class="fixed inset-y-0 left-0 z-30 hidden w-72 border-r border-slate-200/80 bg-white/90 px-4 py-5 shadow-panel glass dark:border-white/10 dark:bg-slate-950/75 lg:block">
+        <div class="flex items-center gap-3 px-2">
+          <div class="grid h-11 w-11 place-items-center rounded-lg bg-ink text-white shadow-soft dark:bg-white dark:text-slate-950">
+            <i data-lucide="boxes" class="h-5 w-5"></i>
+          </div>
+          <div>
+            <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Nexus Stock</p>
+            <h1 class="text-lg font-bold">Inventario</h1>
+          </div>
+        </div>
+
+        <nav class="mt-8 space-y-1">
+          <a class="flex items-center gap-3 rounded-lg bg-slate-950 px-3 py-2.5 text-sm font-semibold text-white shadow-soft dark:bg-white dark:text-slate-950" href="#">
+            <i data-lucide="layout-dashboard" class="h-4 w-4"></i>
+            Panel principal
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10" href="#">
+            <i data-lucide="package-search" class="h-4 w-4"></i>
+            Productos
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10" href="#">
+            <i data-lucide="truck" class="h-4 w-4"></i>
+            Proveedores
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10" href="#">
+            <i data-lucide="bar-chart-3" class="h-4 w-4"></i>
+            Reportes
+          </a>
+          <a class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10" href="#">
+            <i data-lucide="settings" class="h-4 w-4"></i>
+            Ajustes
+          </a>
+        </nav>
+
+        <div class="mt-8 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/5">
+          <div class="mb-4 flex items-center justify-between">
+            <p class="text-sm font-semibold">Salud del stock</p>
+            <span class="rounded-md bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-700 dark:bg-emerald-400/20 dark:text-emerald-300">92%</span>
+          </div>
+          <div class="h-28">
+            <svg viewBox="0 0 260 116" class="h-full w-full" role="img" aria-label="Tendencia de inventario semanal">
+              <path d="M6 102 C34 82, 42 78, 62 84 S98 107, 122 76 S164 20, 192 42 S222 86, 254 26" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" class="text-slate-950 dark:text-white" />
+              <path d="M6 102 C34 82, 42 78, 62 84 S98 107, 122 76 S164 20, 192 42 S222 86, 254 26" fill="none" stroke="#16a34a" stroke-width="4" stroke-linecap="round" />
+            </svg>
+          </div>
+          <p class="mt-3 text-xs leading-5 text-slate-500 dark:text-slate-400">La cobertura promedio subio 8% esta semana y 6 categorias requieren reposicion.</p>
+        </div>
+      </aside>
+
+      <main class="w-full lg:pl-72">
+        <header class="sticky top-0 z-20 border-b border-slate-200/70 bg-cloud/90 px-4 py-3 glass dark:border-white/10 dark:bg-slate-950/75 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex min-w-0 items-center gap-3">
+              <button class="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-200 lg:hidden" aria-label="Abrir menu">
+                <i data-lucide="menu" class="h-5 w-5"></i>
+              </button>
+              <div class="min-w-0">
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Operacion diaria</p>
+                <h2 class="truncate text-xl font-bold sm:text-2xl">Panel de inventario</h2>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="themeToggle" class="grid h-10 w-10 place-items-center rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:text-slate-200" aria-label="Cambiar tema">
+                <i data-lucide="moon" class="h-5 w-5 dark:hidden"></i>
+                <i data-lucide="sun" class="hidden h-5 w-5 dark:block"></i>
+              </button>
+              <button class="hidden h-10 items-center gap-2 rounded-lg bg-slate-950 px-4 text-sm font-semibold text-white shadow-soft transition hover:-translate-y-0.5 dark:bg-white dark:text-slate-950 sm:inline-flex">
+                <i data-lucide="plus" class="h-4 w-4"></i>
+                Nuevo producto
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <section class="space-y-6 px-4 py-5 sm:px-6 lg:px-8">
+          <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <article class="rounded-lg border border-slate-200 bg-white p-4 shadow-panel dark:border-white/10 dark:bg-white/[0.045]">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Valor total</p>
+                  <p class="mt-2 text-2xl font-bold">$184.290</p>
+                </div>
+                <span class="grid h-10 w-10 place-items-center rounded-lg bg-blue-50 text-steel dark:bg-blue-400/10 dark:text-blue-300">
+                  <i data-lucide="wallet-cards" class="h-5 w-5"></i>
+                </span>
+              </div>
+              <p class="mt-4 text-sm font-semibold text-emerald-600 dark:text-emerald-300">+12,4% vs. mes anterior</p>
+            </article>
+            <article class="rounded-lg border border-slate-200 bg-white p-4 shadow-panel dark:border-white/10 dark:bg-white/[0.045]">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Productos activos</p>
+                  <p class="mt-2 text-2xl font-bold">1.428</p>
+                </div>
+                <span class="grid h-10 w-10 place-items-center rounded-lg bg-emerald-50 text-mint dark:bg-emerald-400/10 dark:text-emerald-300">
+                  <i data-lucide="package-check" class="h-5 w-5"></i>
+                </span>
+              </div>
+              <p class="mt-4 text-sm font-semibold text-slate-500 dark:text-slate-400">86 nuevos esta semana</p>
+            </article>
+            <article class="rounded-lg border border-slate-200 bg-white p-4 shadow-panel dark:border-white/10 dark:bg-white/[0.045]">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Stock critico</p>
+                  <p class="mt-2 text-2xl font-bold">37</p>
+                </div>
+                <span class="grid h-10 w-10 place-items-center rounded-lg bg-orange-50 text-coral dark:bg-orange-400/10 dark:text-orange-300">
+                  <i data-lucide="triangle-alert" class="h-5 w-5"></i>
+                </span>
+              </div>
+              <p class="mt-4 text-sm font-semibold text-orange-600 dark:text-orange-300">Prioridad alta hoy</p>
+            </article>
+            <article class="rounded-lg border border-slate-200 bg-white p-4 shadow-panel dark:border-white/10 dark:bg-white/[0.045]">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Rotacion</p>
+                  <p class="mt-2 text-2xl font-bold">4,8x</p>
+                </div>
+                <span class="grid h-10 w-10 place-items-center rounded-lg bg-fuchsia-50 text-fuchsia-600 dark:bg-fuchsia-400/10 dark:text-fuchsia-300">
+                  <i data-lucide="refresh-cw" class="h-5 w-5"></i>
+                </span>
+              </div>
+              <p class="mt-4 text-sm font-semibold text-emerald-600 dark:text-emerald-300">Ritmo saludable</p>
+            </article>
+          </div>
+
+          <div class="grid gap-6 xl:grid-cols-[1fr_340px]">
+            <section class="min-w-0 rounded-lg border border-slate-200 bg-white shadow-panel dark:border-white/10 dark:bg-white/[0.045]">
+              <div class="border-b border-slate-200 p-4 dark:border-white/10 sm:p-5">
+                <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+                  <div>
+                    <h3 class="text-lg font-bold">Productos destacados</h3>
+                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Vista optimizada para escanear estado, stock y acciones.</p>
+                  </div>
+                  <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+                    <label class="relative min-w-0 sm:w-72">
+                      <span class="sr-only">Buscar producto</span>
+                      <i data-lucide="search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"></i>
+                      <input id="productSearch" class="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm outline-none transition focus:border-slate-400 focus:bg-white dark:border-white/10 dark:bg-white/5 dark:focus:border-white/30" value="" placeholder="Buscar por SKU, nombre o categoria" />
+                    </label>
+                    <div class="flex gap-2">
+                      <button class="grid h-10 w-10 place-items-center rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-200" aria-label="Filtrar">
+                        <i data-lucide="sliders-horizontal" class="h-4 w-4"></i>
+                      </button>
+                      <button class="grid h-10 w-10 place-items-center rounded-lg border border-slate-200 bg-white text-slate-700 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-200" aria-label="Exportar">
+                        <i data-lucide="download" class="h-4 w-4"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-4 flex gap-2 overflow-x-auto pb-1 hide-scrollbar" role="tablist" aria-label="Filtros de productos">
+                  <button data-filter="todos" class="shrink-0 rounded-lg bg-slate-950 px-3 py-2 text-sm font-semibold text-white dark:bg-white dark:text-slate-950">Todos</button>
+                  <button data-filter="critico" class="shrink-0 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 dark:border-white/10 dark:text-slate-300">Criticos</button>
+                  <button data-filter="alta" class="shrink-0 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 dark:border-white/10 dark:text-slate-300">Alta rotacion</button>
+                  <button data-filter="sin-proveedor" class="shrink-0 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 dark:border-white/10 dark:text-slate-300">Sin proveedor</button>
+                </div>
+              </div>
+
+              <div class="hidden md:block">
+                <div class="product-row grid border-b border-slate-200 px-5 py-3 text-xs font-bold uppercase tracking-[0.12em] text-slate-400 dark:border-white/10">
+                  <span>Producto</span>
+                  <span>SKU</span>
+                  <span>Stock</span>
+                  <span>Estado</span>
+                  <span>Valor</span>
+                  <span class="text-right">Acciones</span>
+                </div>
+                <div class="divide-y divide-slate-200 dark:divide-white/10">
+                  <div class="product-row grid items-center px-5 py-4 transition hover:bg-slate-50 dark:hover:bg-white/[0.035]">
+                    <div class="flex min-w-0 items-center gap-3">
+                      <div class="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-blue-50 text-steel dark:bg-blue-400/10 dark:text-blue-300"><i data-lucide="monitor-smartphone" class="h-5 w-5"></i></div>
+                      <div class="min-w-0">
+                        <p class="truncate font-bold">Monitor Orion 27 QHD</p>
+                        <p class="truncate text-sm text-slate-500 dark:text-slate-400">Electronica · Displays</p>
+                      </div>
+                    </div>
+                    <span class="font-mono text-sm text-slate-500 dark:text-slate-400">OR-27Q</span>
+                    <div>
+                      <p class="font-bold">186 un.</p>
+                      <div class="stock-bar mt-2 h-1.5 rounded-full bg-slate-100 dark:bg-white/10" style="--level: 78%"><span class="block h-full rounded-full bg-emerald-500"></span></div>
+                    </div>
+                    <span><span class="rounded-md bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-700 dark:bg-emerald-400/20 dark:text-emerald-300">Disponible</span></span>
+                    <span class="font-bold">$64.120</span>
+                    <div class="flex justify-end gap-1">
+                      <button class="grid h-9 w-9 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-white/10 dark:hover:text-white" aria-label="Editar"><i data-lucide="pencil" class="h-4 w-4"></i></button>
+                      <button class="grid h-9 w-9 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-white/10 dark:hover:text-white" aria-label="Ver detalles"><i data-lucide="eye" class="h-4 w-4"></i></button>
+                    </div>
+                  </div>
+                  <div class="product-row grid items-center px-5 py-4 transition hover:bg-slate-50 dark:hover:bg-white/[0.035]">
+                    <div class="flex min-w-0 items-center gap-3">
+                      <div class="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-orange-50 text-coral dark:bg-orange-400/10 dark:text-orange-300"><i data-lucide="keyboard" class="h-5 w-5"></i></div>
+                      <div class="min-w-0">
+                        <p class="truncate font-bold">Teclado Atlas Pro</p>
+                        <p class="truncate text-sm text-slate-500 dark:text-slate-400">Perifericos · Oficina</p>
+                      </div>
+                    </div>
+                    <span class="font-mono text-sm text-slate-500 dark:text-slate-400">AT-KB9</span>
+                    <div>
+                      <p class="font-bold">18 un.</p>
+                      <div class="stock-bar mt-2 h-1.5 rounded-full bg-slate-100 dark:bg-white/10" style="--level: 18%"><span class="block h-full rounded-full bg-orange-500"></span></div>
+                    </div>
+                    <span><span class="rounded-md bg-orange-100 px-2 py-1 text-xs font-bold text-orange-700 dark:bg-orange-400/20 dark:text-orange-300">Reponer</span></span>
+                    <span class="font-bold">$8.550</span>
+                    <div class="flex justify-end gap-1">
+                      <button class="grid h-9 w-9 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-white/10 dark:hover:text-white" aria-label="Editar"><i data-lucide="pencil" class="h-4 w-4"></i></button>
+                      <button class="grid h-9 w-9 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-white/10 dark:hover:text-white" aria-label="Crear orden"><i data-lucide="shopping-cart" class="h-4 w-4"></i></button>
+                    </div>
+                  </div>
+                  <div class="product-row grid items-center px-5 py-4 transition hover:bg-slate-50 dark:hover:bg-white/[0.035]">
+                    <div class="flex min-w-0 items-center gap-3">
+                      <div class="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-400/10 dark:text-rose-300"><i data-lucide="hard-drive" class="h-5 w-5"></i></div>
+                      <div class="min-w-0">
+                        <p class="truncate font-bold">SSD Nova 1TB NVMe</p>
+                        <p class="truncate text-sm text-slate-500 dark:text-slate-400">Componentes · Almacenamiento</p>
+                      </div>
+                    </div>
+                    <span class="font-mono text-sm text-slate-500 dark:text-slate-400">NV-1TB</span>
+                    <div>
+                      <p class="font-bold">7 un.</p>
+                      <div class="stock-bar mt-2 h-1.5 rounded-full bg-slate-100 dark:bg-white/10" style="--level: 7%"><span class="block h-full rounded-full bg-rose-500"></span></div>
+                    </div>
+                    <span><span class="rounded-md bg-rose-100 px-2 py-1 text-xs font-bold text-rose-700 dark:bg-rose-400/20 dark:text-rose-300">Critico</span></span>
+                    <span class="font-bold">$21.760</span>
+                    <div class="flex justify-end gap-1">
+                      <button class="grid h-9 w-9 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-white/10 dark:hover:text-white" aria-label="Editar"><i data-lucide="pencil" class="h-4 w-4"></i></button>
+                      <button class="grid h-9 w-9 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-white/10 dark:hover:text-white" aria-label="Crear orden"><i data-lucide="shopping-cart" class="h-4 w-4"></i></button>
+                    </div>
+                  </div>
+                  <div class="product-row grid items-center px-5 py-4 transition hover:bg-slate-50 dark:hover:bg-white/[0.035]">
+                    <div class="flex min-w-0 items-center gap-3">
+                      <div class="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-emerald-50 text-mint dark:bg-emerald-400/10 dark:text-emerald-300"><i data-lucide="router" class="h-5 w-5"></i></div>
+                      <div class="min-w-0">
+                        <p class="truncate font-bold">Router Mesh Pulse X2</p>
+                        <p class="truncate text-sm text-slate-500 dark:text-slate-400">Redes · Conectividad</p>
+                      </div>
+                    </div>
+                    <span class="font-mono text-sm text-slate-500 dark:text-slate-400">PX2-MS</span>
+                    <div>
+                      <p class="font-bold">94 un.</p>
+                      <div class="stock-bar mt-2 h-1.5 rounded-full bg-slate-100 dark:bg-white/10" style="--level: 62%"><span class="block h-full rounded-full bg-emerald-500"></span></div>
+                    </div>
+                    <span><span class="rounded-md bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-700 dark:bg-emerald-400/20 dark:text-emerald-300">Disponible</span></span>
+                    <span class="font-bold">$18.910</span>
+                    <div class="flex justify-end gap-1">
+                      <button class="grid h-9 w-9 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-white/10 dark:hover:text-white" aria-label="Editar"><i data-lucide="pencil" class="h-4 w-4"></i></button>
+                      <button class="grid h-9 w-9 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-white/10 dark:hover:text-white" aria-label="Ver detalles"><i data-lucide="eye" class="h-4 w-4"></i></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-3 p-4 md:hidden">
+                <article class="rounded-lg border border-slate-200 p-4 dark:border-white/10">
+                  <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                      <p class="truncate font-bold">Monitor Orion 27 QHD</p>
+                      <p class="mt-1 font-mono text-xs text-slate-500 dark:text-slate-400">OR-27Q · Electronica</p>
+                    </div>
+                    <span class="rounded-md bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-700 dark:bg-emerald-400/20 dark:text-emerald-300">Disponible</span>
+                  </div>
+                  <div class="mt-4 grid grid-cols-3 gap-3 text-sm">
+                    <div><p class="text-slate-500 dark:text-slate-400">Stock</p><p class="font-bold">186</p></div>
+                    <div><p class="text-slate-500 dark:text-slate-400">Valor</p><p class="font-bold">$64.120</p></div>
+                    <div class="flex justify-end gap-1"><button class="grid h-9 w-9 place-items-center rounded-lg bg-slate-100 dark:bg-white/10" aria-label="Editar"><i data-lucide="pencil" class="h-4 w-4"></i></button><button class="grid h-9 w-9 place-items-center rounded-lg bg-slate-100 dark:bg-white/10" aria-label="Ver"><i data-lucide="eye" class="h-4 w-4"></i></button></div>
+                  </div>
+                </article>
+                <article class="rounded-lg border border-orange-200 bg-orange-50/50 p-4 dark:border-orange-400/20 dark:bg-orange-400/5">
+                  <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                      <p class="truncate font-bold">Teclado Atlas Pro</p>
+                      <p class="mt-1 font-mono text-xs text-slate-500 dark:text-slate-400">AT-KB9 · Perifericos</p>
+                    </div>
+                    <span class="rounded-md bg-orange-100 px-2 py-1 text-xs font-bold text-orange-700 dark:bg-orange-400/20 dark:text-orange-300">Reponer</span>
+                  </div>
+                  <div class="mt-4 grid grid-cols-3 gap-3 text-sm">
+                    <div><p class="text-slate-500 dark:text-slate-400">Stock</p><p class="font-bold">18</p></div>
+                    <div><p class="text-slate-500 dark:text-slate-400">Valor</p><p class="font-bold">$8.550</p></div>
+                    <div class="flex justify-end gap-1"><button class="grid h-9 w-9 place-items-center rounded-lg bg-white dark:bg-white/10" aria-label="Editar"><i data-lucide="pencil" class="h-4 w-4"></i></button><button class="grid h-9 w-9 place-items-center rounded-lg bg-white dark:bg-white/10" aria-label="Orden"><i data-lucide="shopping-cart" class="h-4 w-4"></i></button></div>
+                  </div>
+                </article>
+                <article class="rounded-lg border border-rose-200 bg-rose-50/50 p-4 dark:border-rose-400/20 dark:bg-rose-400/5">
+                  <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                      <p class="truncate font-bold">SSD Nova 1TB NVMe</p>
+                      <p class="mt-1 font-mono text-xs text-slate-500 dark:text-slate-400">NV-1TB · Componentes</p>
+                    </div>
+                    <span class="rounded-md bg-rose-100 px-2 py-1 text-xs font-bold text-rose-700 dark:bg-rose-400/20 dark:text-rose-300">Critico</span>
+                  </div>
+                  <div class="mt-4 grid grid-cols-3 gap-3 text-sm">
+                    <div><p class="text-slate-500 dark:text-slate-400">Stock</p><p class="font-bold">7</p></div>
+                    <div><p class="text-slate-500 dark:text-slate-400">Valor</p><p class="font-bold">$21.760</p></div>
+                    <div class="flex justify-end gap-1"><button class="grid h-9 w-9 place-items-center rounded-lg bg-white dark:bg-white/10" aria-label="Editar"><i data-lucide="pencil" class="h-4 w-4"></i></button><button class="grid h-9 w-9 place-items-center rounded-lg bg-white dark:bg-white/10" aria-label="Orden"><i data-lucide="shopping-cart" class="h-4 w-4"></i></button></div>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <aside class="space-y-6">
+              <section class="rounded-lg border border-slate-200 bg-white p-5 shadow-panel dark:border-white/10 dark:bg-white/[0.045]">
+                <div class="flex items-center justify-between">
+                  <h3 class="font-bold">Acciones rapidas</h3>
+                  <button class="grid h-9 w-9 place-items-center rounded-lg bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-200" aria-label="Mas acciones">
+                    <i data-lucide="more-horizontal" class="h-4 w-4"></i>
+                  </button>
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                  <button class="group rounded-lg border border-slate-200 p-3 text-left transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md dark:border-white/10 dark:hover:border-white/20">
+                    <i data-lucide="scan-barcode" class="h-5 w-5 text-steel"></i>
+                    <span class="mt-3 block text-sm font-bold">Escanear</span>
+                  </button>
+                  <button class="group rounded-lg border border-slate-200 p-3 text-left transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md dark:border-white/10 dark:hover:border-white/20">
+                    <i data-lucide="shopping-bag" class="h-5 w-5 text-mint"></i>
+                    <span class="mt-3 block text-sm font-bold">Ordenar</span>
+                  </button>
+                  <button class="group rounded-lg border border-slate-200 p-3 text-left transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md dark:border-white/10 dark:hover:border-white/20">
+                    <i data-lucide="upload" class="h-5 w-5 text-coral"></i>
+                    <span class="mt-3 block text-sm font-bold">Importar</span>
+                  </button>
+                  <button class="group rounded-lg border border-slate-200 p-3 text-left transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md dark:border-white/10 dark:hover:border-white/20">
+                    <i data-lucide="file-bar-chart" class="h-5 w-5 text-fuchsia-600 dark:text-fuchsia-300"></i>
+                    <span class="mt-3 block text-sm font-bold">Reporte</span>
+                  </button>
+                </div>
+              </section>
+
+              <section class="rounded-lg border border-slate-200 bg-slate-950 p-5 text-white shadow-panel dark:border-white/10 dark:bg-white/[0.06]">
+                <div class="flex items-center justify-between">
+                  <h3 class="font-bold">Reposicion sugerida</h3>
+                  <span class="rounded-md bg-white/10 px-2 py-1 text-xs font-bold">Hoy</span>
+                </div>
+                <div class="mt-5 space-y-4">
+                  <div class="flex items-center justify-between gap-3">
+                    <div>
+                      <p class="font-semibold">SSD Nova 1TB</p>
+                      <p class="text-sm text-white/60">Comprar 48 unidades</p>
+                    </div>
+                    <button class="grid h-9 w-9 place-items-center rounded-lg bg-white text-slate-950" aria-label="Crear orden"><i data-lucide="arrow-up-right" class="h-4 w-4"></i></button>
+                  </div>
+                  <div class="flex items-center justify-between gap-3">
+                    <div>
+                      <p class="font-semibold">Teclado Atlas Pro</p>
+                      <p class="text-sm text-white/60">Comprar 64 unidades</p>
+                    </div>
+                    <button class="grid h-9 w-9 place-items-center rounded-lg bg-white/10 text-white" aria-label="Crear orden"><i data-lucide="arrow-up-right" class="h-4 w-4"></i></button>
+                  </div>
+                </div>
+              </section>
+            </aside>
+          </div>
+        </section>
+      </main>
+
+      <nav class="fixed bottom-3 left-3 right-3 z-30 grid grid-cols-4 rounded-lg border border-slate-200 bg-white/95 p-1 shadow-soft glass dark:border-white/10 dark:bg-slate-950/90 lg:hidden">
+        <a class="grid place-items-center rounded-md bg-slate-950 py-2 text-white dark:bg-white dark:text-slate-950" href="#" aria-label="Dashboard"><i data-lucide="layout-dashboard" class="h-5 w-5"></i></a>
+        <a class="grid place-items-center rounded-md py-2 text-slate-500 dark:text-slate-300" href="#" aria-label="Productos"><i data-lucide="package-search" class="h-5 w-5"></i></a>
+        <a class="grid place-items-center rounded-md py-2 text-slate-500 dark:text-slate-300" href="#" aria-label="Reportes"><i data-lucide="bar-chart-3" class="h-5 w-5"></i></a>
+        <a class="grid place-items-center rounded-md py-2 text-slate-500 dark:text-slate-300" href="#" aria-label="Ajustes"><i data-lucide="settings" class="h-5 w-5"></i></a>
+      </nav>
+
+      <button class="fixed bottom-20 right-4 z-30 grid h-12 w-12 place-items-center rounded-lg bg-slate-950 text-white shadow-soft dark:bg-white dark:text-slate-950 sm:hidden" aria-label="Nuevo producto">
+        <i data-lucide="plus" class="h-5 w-5"></i>
+      </button>
+    </div>
+
+    <div id="toast" class="pointer-events-none fixed right-4 top-4 z-50 hidden max-w-sm rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-soft dark:border-white/10 dark:bg-slate-900 dark:text-white"></div>
+
+    <div id="modalBackdrop" class="fixed inset-0 z-40 hidden bg-slate-950/45 p-4 backdrop-blur-sm">
+      <section id="modalPanel" class="mx-auto mt-16 w-full max-w-lg rounded-lg border border-slate-200 bg-white p-5 shadow-soft dark:border-white/10 dark:bg-slate-950">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <p id="modalEyebrow" class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Accion</p>
+            <h3 id="modalTitle" class="mt-1 text-xl font-bold">Producto</h3>
+          </div>
+          <button id="closeModal" class="grid h-9 w-9 place-items-center rounded-lg bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-200" aria-label="Cerrar modal">
+            <i data-lucide="x" class="h-4 w-4"></i>
+          </button>
+        </div>
+
+        <div id="modalContent" class="mt-5"></div>
+      </section>
+    </div>
+
+    <script>
+      const root = document.documentElement;
+      const storedTheme = localStorage.getItem("inventory-theme");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      if (storedTheme === "dark" || (!storedTheme && prefersDark)) root.classList.add("dark");
+
+      const products = [
+        { name: "Monitor Orion 27 QHD", sku: "OR-27Q", category: "Electronica - Displays", stock: 186, status: "Disponible", price: 64120, tags: "todos alta" },
+        { name: "Teclado Atlas Pro", sku: "AT-KB9", category: "Perifericos - Oficina", stock: 18, status: "Reponer", price: 8550, tags: "todos critico" },
+        { name: "SSD Nova 1TB NVMe", sku: "NV-1TB", category: "Componentes - Almacenamiento", stock: 7, status: "Critico", price: 21760, tags: "todos critico" },
+        { name: "Router Mesh Pulse X2", sku: "PX2-MS", category: "Redes - Conectividad", stock: 94, status: "Disponible", price: 18910, tags: "todos alta" },
+      ];
+
+      const state = { activeFilter: "todos", editingNode: null };
+      const money = new Intl.NumberFormat("es-AR");
+      const toast = document.getElementById("toast");
+      const modalBackdrop = document.getElementById("modalBackdrop");
+      const modalTitle = document.getElementById("modalTitle");
+      const modalEyebrow = document.getElementById("modalEyebrow");
+      const modalContent = document.getElementById("modalContent");
+
+      const showToast = (message) => {
+        toast.textContent = message;
+        toast.classList.remove("hidden");
+        clearTimeout(window.toastTimer);
+        window.toastTimer = setTimeout(() => toast.classList.add("hidden"), 2400);
+      };
+
+      const openModal = (title, eyebrow, content) => {
+        modalTitle.textContent = title;
+        modalEyebrow.textContent = eyebrow;
+        modalContent.innerHTML = content;
+        modalBackdrop.classList.remove("hidden");
+        if (window.lucide) lucide.createIcons();
+      };
+
+      const closeModal = () => {
+        modalBackdrop.classList.add("hidden");
+        state.editingNode = null;
+      };
+
+      const normalize = (value) => value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+      const productFromNode = (node) => {
+        if (!node) return null;
+        return {
+          name: node.dataset.name || node.querySelector(".font-bold")?.textContent?.trim() || "Producto",
+          sku: node.dataset.sku || node.querySelector(".font-mono")?.textContent?.split(" ")[0]?.trim() || "SKU",
+          category: node.dataset.category || "Sin categoria",
+          stock: Number(node.dataset.stock || node.textContent.match(/(\d+)\s*(un\.|Stock)/i)?.[1] || 0),
+          status: node.dataset.status || (node.textContent.includes("Critico") ? "Critico" : node.textContent.includes("Reponer") ? "Reponer" : "Disponible"),
+          price: Number(node.dataset.price || 0),
+          tags: node.dataset.filterTags || "todos",
+        };
+      };
+
+      const statusClasses = {
+        Disponible: "bg-emerald-100 text-emerald-700 dark:bg-emerald-400/20 dark:text-emerald-300",
+        Reponer: "bg-orange-100 text-orange-700 dark:bg-orange-400/20 dark:text-orange-300",
+        Critico: "bg-rose-100 text-rose-700 dark:bg-rose-400/20 dark:text-rose-300",
+      };
+
+      const setDataset = (node, product) => {
+        node.dataset.name = product.name;
+        node.dataset.sku = product.sku;
+        node.dataset.category = product.category;
+        node.dataset.stock = product.stock;
+        node.dataset.status = product.status;
+        node.dataset.price = product.price;
+        node.dataset.filterTags = product.tags || "todos";
+      };
+
+      const paintStatus = (badge, status) => {
+        if (!badge) return;
+        badge.className = `rounded-md px-2 py-1 text-xs font-bold ${statusClasses[status] || statusClasses.Disponible}`;
+        badge.textContent = status;
+      };
+
+      const updateNode = (node, product) => {
+        setDataset(node, product);
+        const boldTexts = node.querySelectorAll(".font-bold");
+        const nameEl = Array.from(boldTexts).find((item) => item.textContent.includes(node.dataset.name) || item.closest("[data-product]") === node) || boldTexts[0];
+        if (nameEl) nameEl.textContent = product.name;
+        const skuEl = node.querySelector(".font-mono");
+        if (skuEl) skuEl.textContent = node.classList.contains("product-row") ? product.sku : `${product.sku} - ${product.category.split(" - ")[0]}`;
+        const badge = Array.from(node.querySelectorAll("span")).find((item) => ["Disponible", "Reponer", "Critico"].includes(item.textContent.trim()));
+        paintStatus(badge, product.status);
+        const stockLabel = Array.from(node.querySelectorAll("p")).find((item) => /\d+\s*un\./.test(item.textContent));
+        const mobileStockLabel = Array.from(node.querySelectorAll("p.font-bold")).find((item) => /^\d+$/.test(item.textContent.trim()));
+        if (stockLabel) stockLabel.textContent = `${product.stock} un.`;
+        if (mobileStockLabel) mobileStockLabel.textContent = `${product.stock}`;
+        const priceText = `$${money.format(product.price)}`;
+        const priceEl = Array.from(node.querySelectorAll("p, span")).find((item) => item.textContent.trim().startsWith("$"));
+        if (priceEl) priceEl.textContent = priceText;
+      };
+
+      const productNodes = () => Array.from(document.querySelectorAll("[data-product]"));
+
+      const openProductForm = (mode, product = {}, node = null) => {
+        state.editingNode = node;
+        const isEdit = mode === "edit";
+        openModal(isEdit ? "Editar producto" : "Nuevo producto", isEdit ? "Actualizar" : "Crear", `
+          <form id="productForm" class="space-y-4">
+            <div class="grid gap-3 sm:grid-cols-2">
+              <label class="space-y-1 text-sm font-semibold">Nombre
+                <input name="name" required class="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 font-normal outline-none focus:border-slate-400 dark:border-white/10 dark:bg-white/5" value="${product.name || ""}" />
+              </label>
+              <label class="space-y-1 text-sm font-semibold">SKU
+                <input name="sku" required class="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 font-normal outline-none focus:border-slate-400 dark:border-white/10 dark:bg-white/5" value="${product.sku || ""}" />
+              </label>
+              <label class="space-y-1 text-sm font-semibold">Categoria
+                <input name="category" required class="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 font-normal outline-none focus:border-slate-400 dark:border-white/10 dark:bg-white/5" value="${product.category || ""}" />
+              </label>
+              <label class="space-y-1 text-sm font-semibold">Stock
+                <input name="stock" required type="number" min="0" class="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 font-normal outline-none focus:border-slate-400 dark:border-white/10 dark:bg-white/5" value="${product.stock || 0}" />
+              </label>
+              <label class="space-y-1 text-sm font-semibold">Estado
+                <select name="status" class="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 font-normal outline-none focus:border-slate-400 dark:border-white/10 dark:bg-slate-900">
+                  ${["Disponible", "Reponer", "Critico"].map((status) => `<option ${product.status === status ? "selected" : ""}>${status}</option>`).join("")}
+                </select>
+              </label>
+              <label class="space-y-1 text-sm font-semibold">Valor
+                <input name="price" required type="number" min="0" class="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 font-normal outline-none focus:border-slate-400 dark:border-white/10 dark:bg-white/5" value="${product.price || 0}" />
+              </label>
+            </div>
+            <div class="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
+              ${isEdit ? `<button type="button" id="deleteProduct" class="h-10 rounded-lg border border-rose-200 px-4 text-sm font-bold text-rose-600 hover:bg-rose-50 dark:border-rose-400/20 dark:hover:bg-rose-400/10">Eliminar</button>` : ""}
+              <button type="button" id="cancelProduct" class="h-10 rounded-lg border border-slate-200 px-4 text-sm font-bold dark:border-white/10">Cancelar</button>
+              <button class="h-10 rounded-lg bg-slate-950 px-4 text-sm font-bold text-white dark:bg-white dark:text-slate-950">${isEdit ? "Guardar cambios" : "Crear producto"}</button>
+            </div>
+          </form>
+        `);
+      };
+
+      const detailTemplate = (product) => `
+        <div class="space-y-4">
+          <div class="rounded-lg border border-slate-200 p-4 dark:border-white/10">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-lg font-bold">${product.name}</p>
+                <p class="mt-1 font-mono text-sm text-slate-500 dark:text-slate-400">${product.sku}</p>
+              </div>
+              <span class="rounded-md px-2 py-1 text-xs font-bold ${statusClasses[product.status]}">${product.status}</span>
+            </div>
+            <div class="mt-4 grid grid-cols-3 gap-3 text-sm">
+              <div><p class="text-slate-500 dark:text-slate-400">Categoria</p><p class="font-bold">${product.category}</p></div>
+              <div><p class="text-slate-500 dark:text-slate-400">Stock</p><p class="font-bold">${product.stock} un.</p></div>
+              <div><p class="text-slate-500 dark:text-slate-400">Valor</p><p class="font-bold">$${money.format(product.price)}</p></div>
+            </div>
+          </div>
+          <div class="flex justify-end gap-2">
+            <button id="detailOrder" class="h-10 rounded-lg border border-slate-200 px-4 text-sm font-bold dark:border-white/10">Crear orden</button>
+            <button id="detailEdit" class="h-10 rounded-lg bg-slate-950 px-4 text-sm font-bold text-white dark:bg-white dark:text-slate-950">Editar</button>
+          </div>
+        </div>
+      `;
+
+      const desktopRowTemplate = (product) => `
+        <div class="product-row grid items-center px-5 py-4 transition hover:bg-slate-50 dark:hover:bg-white/[0.035]" data-product>
+          <div class="flex min-w-0 items-center gap-3">
+            <div class="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-blue-50 text-steel dark:bg-blue-400/10 dark:text-blue-300"><i data-lucide="package" class="h-5 w-5"></i></div>
+            <div class="min-w-0"><p class="truncate font-bold">${product.name}</p><p class="truncate text-sm text-slate-500 dark:text-slate-400">${product.category}</p></div>
+          </div>
+          <span class="font-mono text-sm text-slate-500 dark:text-slate-400">${product.sku}</span>
+          <div><p class="font-bold">${product.stock} un.</p><div class="stock-bar mt-2 h-1.5 rounded-full bg-slate-100 dark:bg-white/10" style="--level: ${Math.min(product.stock, 100)}%"><span class="block h-full rounded-full bg-emerald-500"></span></div></div>
+          <span><span class="rounded-md px-2 py-1 text-xs font-bold ${statusClasses[product.status]}">${product.status}</span></span>
+          <span class="font-bold">$${money.format(product.price)}</span>
+          <div class="flex justify-end gap-1">
+            <button class="grid h-9 w-9 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-white/10 dark:hover:text-white" aria-label="Editar"><i data-lucide="pencil" class="h-4 w-4"></i></button>
+            <button class="grid h-9 w-9 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:hover:bg-white/10 dark:hover:text-white" aria-label="Ver detalles"><i data-lucide="eye" class="h-4 w-4"></i></button>
+            <button class="grid h-9 w-9 place-items-center rounded-lg text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-400/10 dark:hover:text-rose-300" aria-label="Eliminar"><i data-lucide="trash-2" class="h-4 w-4"></i></button>
+          </div>
+        </div>
+      `;
+
+      const mobileCardTemplate = (product) => `
+        <article class="rounded-lg border border-slate-200 p-4 dark:border-white/10" data-product>
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0"><p class="truncate font-bold">${product.name}</p><p class="mt-1 font-mono text-xs text-slate-500 dark:text-slate-400">${product.sku} - ${product.category}</p></div>
+            <span class="rounded-md px-2 py-1 text-xs font-bold ${statusClasses[product.status]}">${product.status}</span>
+          </div>
+          <div class="mt-4 grid grid-cols-3 gap-3 text-sm">
+            <div><p class="text-slate-500 dark:text-slate-400">Stock</p><p class="font-bold">${product.stock}</p></div>
+            <div><p class="text-slate-500 dark:text-slate-400">Valor</p><p class="font-bold">$${money.format(product.price)}</p></div>
+            <div class="flex justify-end gap-1"><button class="grid h-9 w-9 place-items-center rounded-lg bg-slate-100 dark:bg-white/10" aria-label="Editar"><i data-lucide="pencil" class="h-4 w-4"></i></button><button class="grid h-9 w-9 place-items-center rounded-lg bg-slate-100 dark:bg-white/10" aria-label="Ver"><i data-lucide="eye" class="h-4 w-4"></i></button><button class="grid h-9 w-9 place-items-center rounded-lg bg-slate-100 text-rose-600 dark:bg-white/10" aria-label="Eliminar"><i data-lucide="trash-2" class="h-4 w-4"></i></button></div>
+          </div>
+        </article>
+      `;
+
+      const addProductToUi = (product) => {
+        const desktopList = document.querySelector(".hidden.md\\:block .divide-y");
+        const mobileList = document.querySelector(".space-y-3.p-4.md\\:hidden");
+        desktopList.insertAdjacentHTML("beforeend", desktopRowTemplate(product));
+        mobileList.insertAdjacentHTML("beforeend", mobileCardTemplate(product));
+        document.querySelectorAll(`[data-product]:not([data-name])`).forEach((node) => setDataset(node, product));
+        if (window.lucide) lucide.createIcons();
+      };
+
+      const applyFilters = () => {
+        const query = normalize(document.getElementById("productSearch")?.value || "");
+        productNodes().forEach((node) => {
+          const product = productFromNode(node);
+          const matchesSearch = normalize(node.textContent).includes(query);
+          const matchesFilter = state.activeFilter === "todos" || product.tags.includes(state.activeFilter);
+          node.classList.toggle("hidden", !(matchesSearch && matchesFilter));
+        });
+      };
+
+      const hydrate = () => {
+        products.forEach((product) => {
+          document.querySelectorAll(".product-row, article").forEach((node) => {
+            if (node.textContent.includes(product.name)) {
+              node.setAttribute("data-product", "");
+              setDataset(node, product);
+            }
+          });
+        });
+
+        document.querySelectorAll("[data-product]").forEach((node) => {
+          const actions = node.querySelector(".justify-end.gap-1");
+          if (actions && !actions.querySelector('[aria-label="Eliminar"]')) {
+            actions.insertAdjacentHTML("beforeend", `<button class="grid h-9 w-9 place-items-center rounded-lg text-slate-500 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-400/10 dark:hover:text-rose-300" aria-label="Eliminar"><i data-lucide="trash-2" class="h-4 w-4"></i></button>`);
+          }
+        });
+      };
+
+      document.getElementById("themeToggle").addEventListener("click", () => {
+        root.classList.toggle("dark");
+        localStorage.setItem("inventory-theme", root.classList.contains("dark") ? "dark" : "light");
+      });
+
+      document.getElementById("closeModal").addEventListener("click", closeModal);
+      modalBackdrop.addEventListener("click", (event) => {
+        if (event.target === modalBackdrop) closeModal();
+      });
+
+      document.addEventListener("submit", (event) => {
+        if (event.target.id !== "productForm") return;
+        event.preventDefault();
+        const form = new FormData(event.target);
+        const product = {
+          name: form.get("name").trim(),
+          sku: form.get("sku").trim(),
+          category: form.get("category").trim(),
+          stock: Number(form.get("stock")),
+          status: form.get("status"),
+          price: Number(form.get("price")),
+          tags: form.get("status") === "Disponible" ? "todos alta" : "todos critico",
+        };
+        if (state.editingNode) {
+          const original = productFromNode(state.editingNode);
+          productNodes().filter((node) => node.dataset.sku === original.sku || node.dataset.name === original.name).forEach((node) => updateNode(node, product));
+          showToast("Producto actualizado");
+        } else {
+          addProductToUi(product);
+          showToast("Producto creado");
+        }
+        closeModal();
+        applyFilters();
+      });
+
+      document.addEventListener("click", (event) => {
+        const button = event.target.closest("button, a");
+        if (!button) return;
+        const label = button.getAttribute("aria-label") || button.textContent.trim();
+        const productNode = button.closest("[data-product]");
+        const product = productFromNode(productNode);
+
+        if (label.includes("Nuevo producto")) openProductForm("new");
+        if (label.includes("Editar") && button.id !== "detailEdit") openProductForm("edit", product, productNode);
+        if (label.includes("Ver")) {
+          state.editingNode = productNode;
+          openModal("Detalle de producto", "Lectura", detailTemplate(product));
+        }
+        if ((label.includes("Crear orden") || label.includes("Orden")) && button.id !== "detailOrder") {
+          openModal("Orden de compra", "Reposicion", `
+            <div class="space-y-4">
+              <p class="text-sm text-slate-500 dark:text-slate-400">Se preparo una orden visual para <strong class="text-slate-950 dark:text-white">${product?.name || "este producto"}</strong>.</p>
+              <label class="space-y-1 text-sm font-semibold">Cantidad sugerida
+                <input type="number" value="${product?.status === "Critico" ? 48 : 24}" class="h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 font-normal dark:border-white/10 dark:bg-white/5" />
+              </label>
+              <button id="confirmOrder" class="h-10 w-full rounded-lg bg-slate-950 px-4 text-sm font-bold text-white dark:bg-white dark:text-slate-950">Confirmar orden</button>
+            </div>
+          `);
+        }
+        if (label.includes("Eliminar")) {
+          openModal("Eliminar producto", "Confirmacion", `
+            <p class="text-sm text-slate-500 dark:text-slate-400">Esto quitara <strong class="text-slate-950 dark:text-white">${product.name}</strong> de la maqueta actual.</p>
+            <div class="mt-5 flex justify-end gap-2">
+              <button id="cancelProduct" class="h-10 rounded-lg border border-slate-200 px-4 text-sm font-bold dark:border-white/10">Cancelar</button>
+              <button id="confirmDelete" class="h-10 rounded-lg bg-rose-600 px-4 text-sm font-bold text-white">Eliminar</button>
+            </div>
+          `);
+          state.editingNode = productNode;
+        }
+        if (label.includes("Filtrar")) openModal("Filtros", "Vista", `<div class="grid gap-2">${["todos", "critico", "alta", "sin-proveedor"].map((filter) => `<button data-modal-filter="${filter}" class="rounded-lg border border-slate-200 px-3 py-2 text-left text-sm font-bold dark:border-white/10">${filter}</button>`).join("")}</div>`);
+        if (label.includes("Exportar")) showToast("Exportacion visual preparada");
+        if (label.includes("Escanear")) showToast("Scanner visual activado");
+        if (label.includes("Importar")) openProductForm("new", { name: "Producto importado", sku: "IMP-001", category: "Importados", stock: 12, status: "Disponible", price: 12000 });
+        if (label.includes("Reporte")) showToast("Reporte visual generado");
+        if (label.includes("Mas acciones")) showToast("Acciones adicionales desplegadas");
+        if (label.includes("Abrir menu")) showToast("Menu movil listo");
+
+        if (button.id === "cancelProduct") closeModal();
+        if (button.id === "deleteProduct" || button.id === "confirmDelete") {
+          const original = productFromNode(state.editingNode);
+          productNodes().filter((node) => node.dataset.sku === original.sku || node.dataset.name === original.name).forEach((node) => node.remove());
+          closeModal();
+          showToast("Producto eliminado");
+        }
+        if (button.id === "confirmOrder") {
+          closeModal();
+          showToast("Orden creada");
+        }
+        if (button.id === "detailEdit") openProductForm("edit", productFromNode(state.editingNode), state.editingNode);
+        if (button.id === "detailOrder") showToast("Orden creada desde detalle");
+        if (button.dataset.modalFilter) {
+          state.activeFilter = button.dataset.modalFilter;
+          closeModal();
+          applyFilters();
+          showToast("Filtro aplicado");
+        }
+      });
+
+      document.querySelectorAll("[data-filter]").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.activeFilter = button.dataset.filter;
+          document.querySelectorAll("[data-filter]").forEach((item) => {
+            item.className = "shrink-0 rounded-lg border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-600 dark:border-white/10 dark:text-slate-300";
+          });
+          button.className = "shrink-0 rounded-lg bg-slate-950 px-3 py-2 text-sm font-semibold text-white dark:bg-white dark:text-slate-950";
+          applyFilters();
+        });
+      });
+
+      document.getElementById("productSearch")?.addEventListener("input", applyFilters);
+
+      window.addEventListener("DOMContentLoaded", () => {
+        hydrate();
+        if (window.lucide) lucide.createIcons();
+      });
+    </script>
+  </body>
+</html>
