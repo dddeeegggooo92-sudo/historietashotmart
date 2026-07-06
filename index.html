@@ -123,6 +123,15 @@
         line-height: 1;
         text-decoration: none;
         text-transform: uppercase;
+        animation: ctaPulse 3s infinite ease-in-out;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      }
+
+      .hero__cta:hover {
+        transform: translateY(-4px) scale(1.04);
+        box-shadow: 0 22px 35px rgba(8, 175, 45, 0.6);
+        filter: brightness(1.08);
+        animation: none;
       }
 
       .hero__cta::after {
@@ -437,6 +446,15 @@
         line-height: 1;
         text-decoration: none;
         text-transform: uppercase;
+        animation: ctaPulse 3s infinite ease-in-out;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      }
+
+      .bonuses__cta:hover {
+        transform: translateY(-4px) scale(1.04);
+        box-shadow: 0 22px 35px rgba(8, 175, 45, 0.6);
+        filter: brightness(1.08);
+        animation: none;
       }
 
       .bonuses__cta::after {
@@ -1210,6 +1228,53 @@
       @media (min-width: 768px) {
         .guarantee-cta__cta-wrap .cta-price-warning {
           text-align: left;
+        }
+      }
+
+      /* Shimmer effect for high-conversion CTAs */
+      .hero__cta::before,
+      .bonuses__cta::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -150%;
+        width: 60%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 0.4) 50%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        transform: skewX(-25deg);
+        z-index: 2;
+        animation: ctaShimmer 3.5s infinite ease-in-out;
+      }
+
+      @keyframes ctaShimmer {
+        0% {
+          left: -150%;
+        }
+        25% {
+          left: 150%;
+        }
+        100% {
+          left: 150%;
+        }
+      }
+
+      @keyframes ctaPulse {
+        0% {
+          transform: scale(1);
+          box-shadow: 0 12px 20px rgba(8, 199, 52, 0.2);
+        }
+        50% {
+          transform: scale(1.018);
+          box-shadow: 0 18px 30px rgba(8, 199, 52, 0.4);
+        }
+        100% {
+          transform: scale(1);
+          box-shadow: 0 12px 20px rgba(8, 199, 52, 0.2);
         }
       }
     </style>
