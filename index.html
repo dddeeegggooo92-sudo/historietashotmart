@@ -1136,6 +1136,28 @@
         line-height: 1.6;
         color: #718096;
       }
+
+      /* Pricing Tag Style */
+      .cta-price-tag {
+        font-size: clamp(20px, 3vw, 26px);
+        font-weight: 700;
+        color: #07142f;
+        margin: 24px auto 12px;
+        text-align: center;
+      }
+      .cta-price-tag strong {
+        font-weight: 900;
+        color: #05bd2f;
+      }
+      .guarantee-cta__cta-wrap .cta-price-tag {
+        margin: 0 0 8px;
+        text-align: center;
+      }
+      @media (min-width: 768px) {
+        .guarantee-cta__cta-wrap .cta-price-tag {
+          text-align: left;
+        }
+      }
     </style>
   </head>
   <body>
@@ -1176,6 +1198,7 @@
           />
         </figure>
 
+        <p class="cta-price-tag">Único pago de solo <strong>$12.000 ARS</strong></p>
         <a class="hero__cta" href="#comprar" aria-label="Comprar mi pack">
           <span>¡Sí, quiero mi pack!</span>
         </a>
@@ -1344,6 +1367,7 @@
           </article>
         </div>
 
+        <p class="cta-price-tag">Llevate el pack + los 6 regalos por solo <strong>$12.000 ARS</strong></p>
         <a class="bonuses__cta" href="#comprar">
           <span>¡Sí, quiero mi pack!</span>
         </a>
@@ -1595,6 +1619,7 @@
           </p>
           
           <div class="guarantee-cta__cta-wrap">
+            <p class="cta-price-tag">Todo incluido por solo <strong>$12.000 ARS</strong></p>
             <a class="bonuses__cta guarantee-cta__btn" href="https://mpago.la/2S5kFwV" aria-label="Comprar mi pack">
               <span>¡Sí, quiero mi pack!</span>
             </a>
