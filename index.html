@@ -1927,5 +1927,117 @@
         setInterval(updateTimer, 1000);
       });
     </script>
+
+    <!-- n8n Webhook Integration -->
+    <script>
+      (function () {
+        var N8N_WEBHOOK_URL = "https://paneln8n.librosprohibidos.online/webhook/histohotmart";
+
+        function getCookie(name) {
+          var match = document.cookie.match("(^|;)\\s*" + name + "\\s*=\\s*([^;]+)");
+          return match ? decodeURIComponent(match.pop()) : "";
+        }
+
+        function getUrlParam(name) {
+          var params = new URLSearchParams(window.location.search);
+          return params.get(name) || "";
+        }
+
+        function getOrCreateLeadId() {
+          var leadId = localStorage.getItem("hotmart_lead_id");
+
+          if (!leadId) {
+            leadId = "lead_" + Date.now() + "_" + Math.random().toString(36).substring(2, 10);
+            localStorage.setItem("hotmart_lead_id", leadId);
+          }
+
+          return leadId;
+        }
+
+        function buildFbc() {
+          var fbc = getCookie("_fbc");
+          var fbclid = getUrlParam("fbclid");
+
+          if (fbc) return fbc;
+          if (fbclid) return "fb.1." + Date.now() + "." + fbclid;
+
+          return "";
+        }
+
+        function buildData(originalUrl) {
+          var leadId = getOrCreateLeadId();
+          var fbclid = getUrlParam("fbclid");
+
+          return {
+            lead_id: leadId,
+            fbp: getCookie("_fbp"),
+            fbc: buildFbc(),
+            fbclid: fbclid,
+            user_agent: navigator.userAgent,
+            page_url: window.location.href,
+            original_hotmart_url: originalUrl,
+            clicked_at: new Date().toISOString()
+          };
+        }
+
+        function buildHotmartUrl(originalUrl, data) {
+          var url = new URL(originalUrl);
+
+          if (data.fbp) url.searchParams.set("fbp", data.fbp);
+          if (data.fbc) url.searchParams.set("fbc", data.fbc);
+          if (data.fbclid) url.searchParams.set("fbclid", data.fbclid);
+
+          url.searchParams.set("sck", data.lead_id);
+          url.searchParams.set("src", data.lead_id);
+
+          return url.toString();
+        }
+
+        function sendToN8n(data) {
+          var payload = JSON.stringify(data);
+
+          fetch(N8N_WEBHOOK_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: payload,
+            keepalive: true
+          }).catch(function (error) {
+            console.log("Error enviando a n8n:", error);
+          });
+        }
+
+        document.addEventListener("click", function (event) {
+          var element = event.target;
+
+          while (element && element.tagName !== "A") {
+            element = element.parentElement;
+          }
+
+          if (!element || !element.href) return;
+
+          if (
+            element.href.indexOf("hotmart.com") === -1 &&
+            element.href.indexOf("pay.hotmart.com") === -1
+          ) {
+            return;
+          }
+
+          event.preventDefault();
+
+          var data = buildData(element.href);
+          var finalUrl = buildHotmartUrl(element.href, data);
+
+          data.final_hotmart_url = finalUrl;
+
+          sendToN8n(data);
+
+          setTimeout(function () {
+            window.location.href = finalUrl;
+          }, 700);
+        });
+      })();
+    </script>
   </body>
 </html>
